@@ -4,6 +4,7 @@ import "fmt"
 import "net/http"
 import "net/url"
 import "flag"
+import "log"
 import "github.com/itang/fanyi"
 
 var httpProxyUrl string = ""
@@ -30,22 +31,23 @@ func main() {
 		tl = args[2]
 	}
 	result, err := fanyiServer().Fanyi(q, sl, tl)
-	fanyi.CheckError(err)
+	checkError(err)
 
 	fmt.Println(result)
 }
 
 func fanyiServer() *fanyi.FanyiServer {
 	fanyiServer := &fanyi.FanyiServer{}
-
-	fmt.Println("httpProxyUrl:" + httpProxyUrl)
-
 	if httpProxyUrl != "" {
 		proxyUrl, err := url.Parse("http://" + httpProxyUrl)
-		fanyi.CheckError(err)
-		fmt.Println("Use proxy!")
+		checkError(err)
 		fanyiServer.SetHttpClient(&http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}})
 	}
-
 	return fanyiServer
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
