@@ -7,6 +7,9 @@ import "sync"
 
 const ApiURL = "http://translate.google.cn/translate_a/t?client=t&hl=zh-CN&sl=%s&tl=%s&ie=UTF-8&oe=UTF-8&q=%s"
 
+var initCtx sync.Once
+var defaultFanyiServer *FanyiServer
+
 /////////////////////////////////////////////////////////////////
 type FanyiError struct {
 	Cause error
@@ -24,14 +27,15 @@ func Fanyi(q string, sl string, tl string) (string, error) {
 	return DefaultFanyiServer().Fanyi(q, sl, tl)
 }
 
-var initCtx sync.Once
-var defaultFanyiServer *FanyiServer
-
 func DefaultFanyiServer() *FanyiServer {
 	initCtx.Do(func() {
-		defaultFanyiServer = &FanyiServer{}
+		defaultFanyiServer = NewFanyiServer()
 	})
 	return defaultFanyiServer
+}
+
+func NewFanyiServer() *FanyiServer {
+	return &FanyiServer{http.DefaultClient}
 }
 
 // @Mutable
@@ -57,9 +61,6 @@ func (this *FanyiServer) Fanyi(q string, sl string, tl string) (string, error) {
 }
 
 func (this *FanyiServer) HttpClient() *http.Client {
-	if this.httpClient == nil {
-		this.httpClient = http.DefaultClient
-	}
 	return this.httpClient
 }
 
