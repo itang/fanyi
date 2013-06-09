@@ -3,6 +3,7 @@ package fanyi
 import "fmt"
 import "net/http"
 import "io/ioutil"
+import "sync"
 
 const ApiURL = "http://translate.google.cn/translate_a/t?client=t&hl=zh-CN&sl=%s&tl=%s&ie=UTF-8&oe=UTF-8&q=%s"
 
@@ -20,10 +21,20 @@ func NewFanyiError(cause error) *FanyiError {
 }
 
 func Fanyi(q string, sl string, tl string) (string, error) {
-	server := &FanyiServer{}
-	return server.Fanyi(q, sl, tl)
+	return DefaultFanyiServer().Fanyi(q, sl, tl)
 }
 
+var initCtx sync.Once
+var defaultFanyiServer *FanyiServer
+
+func DefaultFanyiServer() *FanyiServer {
+	initCtx.Do(func() {
+		defaultFanyiServer = &FanyiServer{}
+	})
+	return defaultFanyiServer
+}
+
+// @Mutable
 type FanyiServer struct {
 	httpClient *http.Client
 }
