@@ -1,12 +1,14 @@
 package main
 
-import "fmt"
-import "net/http"
-import "net/url"
-import "flag"
-import "log"
-import "strings"
-import "github.com/itang/fanyi"
+import (
+	"flag"
+	"fmt"
+	"github.com/itang/fanyi"
+	"github.com/itang/gotang"
+	"net/http"
+	"net/url"
+	"strings"
+)
 
 var httpProxyUrl string = ""
 
@@ -32,7 +34,7 @@ func main() {
 		tl = args[2]
 	}
 	result, err := fanyiServer().Fanyi(q, sl, tl)
-	checkError(err)
+	gotang.CheckError(err)
 
 	prettyOutput(result)
 }
@@ -41,7 +43,7 @@ func fanyiServer() *fanyi.FanyiServer {
 	fanyiServer := fanyi.DefaultFanyiServer()
 	if httpProxyUrl != "" {
 		proxyUrl, err := url.Parse("http://" + httpProxyUrl)
-		checkError(err)
+		gotang.CheckError(err)
 		fanyiServer.SetHttpClient(
 			&http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}},
 		)
@@ -54,11 +56,5 @@ func prettyOutput(result string) {
 	rets := strings.Split(result, "]],")
 	for i, v := range rets {
 		fmt.Printf("%d: %s\n", i, v)
-	}
-}
-
-func checkError(err error) {
-	if err != nil {
-		log.Fatalln(err)
 	}
 }
