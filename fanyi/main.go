@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/itang/fanyi"
-	"github.com/itang/gotang"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/itang/fanyi"
+	"github.com/itang/gotang"
 )
 
 var httpProxyUrl string = ""
