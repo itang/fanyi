@@ -35,7 +35,7 @@ func main() {
 		tl = args[2]
 	}
 	result, err := fanyiServer().Fanyi(q, sl, tl)
-	gotang.CheckError(err)
+	gotang.AssertNoError(err, "")
 
 	prettyOutput(result)
 }
@@ -44,7 +44,7 @@ func fanyiServer() *fanyi.FanyiServer {
 	fanyiServer := fanyi.DefaultFanyiServer()
 	if httpProxyUrl != "" {
 		proxyUrl, err := url.Parse("http://" + httpProxyUrl)
-		gotang.CheckError(err)
+		gotang.AssertNoError(err, "")
 		fanyiServer.SetHttpClient(
 			&http.Client{Transport: &http.Transport{Proxy: http.ProxyURL(proxyUrl)}},
 		)
